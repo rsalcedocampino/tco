@@ -254,11 +254,11 @@ function onModelo(side){
   $(side+'Modelo').value=has?cur:(ms[0]?ms[0].id:'');
   loadSel(side);
 }
-function selectModelo(side){onModelo(side);}
+function selectModelo(side){loadSel(side);}
 
 ['Tec','Anio','Carr'].forEach(k=>{$('ev'+k).onchange=()=>refresh('ev');$('ic'+k).onchange=()=>refresh('ic');});
-$("evMarca").onchange=()=>onMarca('ev');$("evModelo").onchange=()=>onModelo('ev');
-$("icMarca").onchange=()=>onMarca('ic');$("icModelo").onchange=()=>onModelo('ic');
+$("evMarca").onchange=()=>refreshModelo('ev');$("evModelo").onchange=()=>loadSel('ev');
+$("icMarca").onchange=()=>refreshModelo('ic');$("icModelo").onchange=()=>loadSel('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
 ["evCons","icCons","perdidas","ufphev","resEv","resIc"].forEach(id=>$(id).addEventListener("input",calc));
 $("hUso").addEventListener("input",()=>syncHoras("uso"));$("hEstac").addEventListener("input",()=>syncHoras("estac"));["potCarga"].forEach(id=>{$(id).addEventListener("input",calcCarga);$(id).addEventListener("change",calcCarga);});
