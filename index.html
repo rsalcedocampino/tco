@@ -99,7 +99,7 @@ const $=id=>document.getElementById(id);
 let curEv=null,curIc=null;
 const TECLABEL={'BEV':'BEV','PHEV':'PHEV + PEREV','FCEV':'FCEV','ICE':'ICE','HEV':'HEV','MHEV':'MHEV'};
 const EVTECS=['BEV','PHEV'], ICTECS=['ICE','HEV','MHEV'];
-(function(){var ev=DATA.ev,seen={};ev.forEach(function(v){seen[v.ma+"|"+v.ve+"|"+v.an]=1;});var add=[];ev.forEach(function(v){if(v.an>=2023&&v.an<2026){for(var y=v.an+1;y<=2026;y++){var k=v.ma+"|"+v.ve+"|"+y;if(!seen[k]){seen[k]=1;add.push(Object.assign({},v,{an:y}));}}}});DATA.ev=ev.concat(add);})();
+(function(){var ev=DATA.ev,seen={};ev.forEach(function(v){seen[v.ma+"|"+v.ve+"|"+v.an]=1;});var add=[];ev.forEach(function(v){if(v.an>=2021){var top=Math.min(v.an+3,2026);for(var y=v.an+1;y<=top;y++){var k=v.ma+"|"+v.ve+"|"+y;if(!seen[k]){seen[k]=1;add.push(Object.assign({},v,{an:y}));}}}});DATA.ev=ev.concat(add);})();
 DATA.ev.forEach((v,i)=>v.id=i);DATA.ic.forEach((v,i)=>v.id=i);
 function residualParam(t,Y){let r;if(t==='BEV'||t==='FCEV')r=(1-0.24)*Math.pow(0.89,Y-1);else if(t==='PHEV'||t==='HEV'||t==='MHEV')r=(1-0.22)*Math.pow(0.90,Y-1);else r=(1-0.20)*Math.pow(0.91,Y-1);return Math.max(12,Math.min(92,r*100));}
 function label(v){return `${v.mo} ${v.ve} (${v.an})`.replace(/\s+/g,' ').trim();}
