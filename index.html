@@ -57,6 +57,14 @@ small.hint{color:var(--mut);font-size:10px}
   <div class="row3" style="margin-top:4px"><div><label>Diésel (CLP/L)</label><input id="pdie" class="money" type="text" inputmode="numeric" value="1.512"></div><div><label>UTM (CLP)</label><input id="utm" class="money" type="text" inputmode="numeric" value="70.000"></div><div><label>Pérdidas de carga (%)</label><input id="perdidas" type="number" value="10"></div></div>
   <div class="row3" style="margin-top:4px"><div><label>% km eléctrico (PHEV)</label><input id="ufphev" type="number" value="60"></div><div><label>Wallbox (CLP, único)</label><input id="wallbox" class="money" type="text" inputmode="numeric" value="450.000"></div><div></div></div>
   <small class="hint">Permiso de circulación e impuesto verde se toman del dato real por modelo (SII / Ley 20.780). PHEV usa mezcla eléctrico+bencina.</small></div>
+  <div class="card" style="margin-top:16px"><h2>Carga del vehículo eléctrico</h2>
+    <div class="row3">
+      <div><label>Horas estacionado al día</label><input id="hEstac" type="number" min="0" max="24" step="0.5" value="12"></div>
+      <div><label>Potencia de carga</label><select id="potCarga"><option value="2.3">Enchufe hogar — 2,3 kW</option><option value="7.4" selected>Wallbox — 7,4 kW</option><option value="11">Wallbox trifásica — 11 kW</option><option value="22">Wallbox trifásica — 22 kW</option><option value="50">Carga rápida DC — 50 kW</option></select></div>
+      <div><label>Horas disponibles para cargar</label><input id="hDispo" type="text" readonly value="12 h" style="background:#eef3ee;font-weight:700;color:#37474f"></div>
+    </div>
+    <div id="cargaInfo" class="hint" style="margin-top:8px"></div>
+  </div>
 <details><summary>Supuestos de costo (auto por modelo, editables)</summary>
   <div class="section-title">Valor residual al final del período (%) <small class="hint">curva real SII si está disponible</small></div>
   <div class="row2"><div><label>Eléctrico</label><input id="resEv" type="number" step="0.1" value="60"></div><div><label>Combustión</label><input id="resIc" type="number" step="0.1" value="50"></div></div>
@@ -117,6 +125,19 @@ function energyEv(v,km,pkwh,pbenc,perd,uf){
   return ke>0?km/ke*pkwh*perd:0;}
 let KMYEAR=18000;
 function syncKm(src){let yr;if(src==="dia")yr=M("kmDia")*365;else if(src==="sem")yr=M("kmSem")*52;else yr=M("kmMes")*12;if(src!=="dia")$("kmDia").value=fmt(Math.round(yr/365));if(src!=="sem")$("kmSem").value=fmt(Math.round(yr/52));if(src!=="mes")$("kmMes").value=fmt(Math.round(yr/12));KMYEAR=yr;$("kmAnio").value=fmt(yr);calc();}
+function calcCarga(){
+  const hEst=+$("hEstac").value||0,pot=+$("potCarga").value||7.4;
+  $("hDispo").value=(Number.isInteger(hEst)?hEst:hEst.toFixed(1))+" h";
+  const kmd=M("kmDia"),ke=+$("evCons").value||0;
+  const need=ke>0?kmd/ke:0,hNeed=pot>0?need/pot:0,avail=hEst*pot;
+  let msg;
+  if(ke<=0){msg='Ingresa el rendimiento eléctrico (km/kWh) para estimar la carga.';}
+  else{const ok=avail>=need,potTxt=String(pot).replace('.',',');
+    msg=`Energía diaria requerida: <b>${need.toFixed(1)} kWh</b> · tiempo de carga necesario: <b>${hNeed.toFixed(1)} h</b>. `+
+      (ok?`✅ Con <b>${$("hDispo").value}</b> estacionado y ${potTxt} kW alcanzas a reponer el consumo diario (capacidad: ${Math.round(avail)} kWh/día).`
+         :`⚠️ Insuficiente: en ${$("hDispo").value} solo cargas ${Math.round(avail)} kWh (necesitas ${need.toFixed(1)} kWh). Sube la potencia o las horas.`);}
+  $("cargaInfo").innerHTML=msg;
+}
 function calc(){
   const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
   const evP=M("evPrecio"),icP=M("icPrecio");
@@ -144,7 +165,7 @@ function calc(){
   const rows=[["Depreciación (precio − residual)",evDep,icDep],["Energía / combustible",evEnergy*Y,icEnergy*Y],["Mantención",evMant*Y,icMant*Y],["Seguro",evSeg*Y,icSeg*Y],["Permiso de circulación",evPerm*Y,icPerm*Y],["Impuesto verde + wallbox",wb+evIv,icIv]];
   $("breakdown").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="ev">${CLP(r[1])}</td><td class="ice">${CLP(r[2])}</td></tr>`).join("")+`<tr class="total"><td>TCO total</td><td class="ev">${CLP(evTCO)}</td><td class="ice">${CLP(icTCO)}</td></tr>`;
   $("ckmEv").textContent=CLP(evTCO/(km*Y))+"/km";$("ckmIc").textContent=CLP(icTCO/(km*Y))+"/km";
-  drawChart(Y,evUp,evM,icUp,icM,cross);}
+  drawChart(Y,evUp,evM,icUp,icM,cross);calcCarga();}
 let chart,BE={};
 function drawChart(Y,evUp,evM,icUp,icM,cross){
   BE={cross,evUp,evM};
@@ -201,9 +222,10 @@ $("evMarca").onchange=()=>refreshModelo('ev');$("evModelo").onchange=()=>selectM
 $("icMarca").onchange=()=>refreshModelo('ic');$("icModelo").onchange=()=>selectModelo('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
 ["evCons","icCons","perdidas","ufphev","resEv","resIc"].forEach(id=>$(id).addEventListener("input",calc));
+["hEstac","potCarga"].forEach(id=>{$(id).addEventListener("input",calcCarga);$(id).addEventListener("change",calcCarga);});
 $("kmDia").addEventListener("input",()=>syncKm("dia"));$("kmMes").addEventListener("input",()=>syncKm("mes"));$("kmSem").addEventListener("input",()=>syncKm("sem"));
 bindMoney();
-syncKm("mes");
+syncKm("mes");calcCarga();
 $("evTec").value="BEV";refresh('ev');
 $("icTec").value="ICE";refresh('ic');
 </script></body></html>
