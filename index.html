@@ -52,9 +52,10 @@ small.hint{color:var(--mut);font-size:10px}
     <div class="specs" id="icSpecs"></div></div>
 </div>
 <div class="card" style="margin-top:16px"><h2>Uso y precios de energía</h2>
-  <div class="row3"><div><label>Kilómetros al mes</label><input id="kmMes" class="money" type="text" inputmode="numeric" value="1.500"></div><div><label>Período (años)</label><input id="anios" type="number" value="5"></div><div><label>Electricidad (CLP/kWh)</label><input id="pkwh" class="money" type="text" inputmode="numeric" value="150"></div></div>
-  <div class="row3" style="margin-top:4px"><div><label>Bencina (CLP/L)</label><input id="pbenc" class="money" type="text" inputmode="numeric" value="1.539"></div><div><label>Diésel (CLP/L)</label><input id="pdie" class="money" type="text" inputmode="numeric" value="1.512"></div><div><label>UTM (CLP)</label><input id="utm" class="money" type="text" inputmode="numeric" value="70.000"></div></div>
-  <div class="row3" style="margin-top:4px"><div><label>Pérdidas de carga (%)</label><input id="perdidas" type="number" value="10"></div><div><label>% km eléctrico (PHEV)</label><input id="ufphev" type="number" value="60"></div><div><label>Wallbox (CLP, único)</label><input id="wallbox" class="money" type="text" inputmode="numeric" value="450.000"></div></div>
+  <div class="row3"><div><label>Kilómetros al mes</label><input id="kmMes" class="money" type="text" inputmode="numeric" value="1.500"></div><div><label>Kilómetros a la semana</label><input id="kmSem" class="money" type="text" inputmode="numeric" value="346"></div><div><label>Kilómetros al año</label><input id="kmAnio" class="money" type="text" inputmode="numeric" value="18.000" readonly style="background:#eef3ee;font-weight:700;color:#37474f"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label>Período (años)</label><input id="anios" type="number" value="5"></div><div><label>Electricidad (CLP/kWh)</label><input id="pkwh" class="money" type="text" inputmode="numeric" value="150"></div><div><label>Bencina (CLP/L)</label><input id="pbenc" class="money" type="text" inputmode="numeric" value="1.539"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label>Diésel (CLP/L)</label><input id="pdie" class="money" type="text" inputmode="numeric" value="1.512"></div><div><label>UTM (CLP)</label><input id="utm" class="money" type="text" inputmode="numeric" value="70.000"></div><div><label>Pérdidas de carga (%)</label><input id="perdidas" type="number" value="10"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label>% km eléctrico (PHEV)</label><input id="ufphev" type="number" value="60"></div><div><label>Wallbox (CLP, único)</label><input id="wallbox" class="money" type="text" inputmode="numeric" value="450.000"></div><div></div></div>
   <small class="hint">Permiso de circulación e impuesto verde se toman del dato real por modelo (SII / Ley 20.780). PHEV usa mezcla eléctrico+bencina.</small></div>
 <details><summary>Supuestos de costo (auto por modelo, editables)</summary>
   <div class="section-title">Valor residual al final del período (%) <small class="hint">curva real SII si está disponible</small></div>
@@ -114,9 +115,11 @@ function energyEv(v,km,pkwh,pbenc,perd,uf){if(!v)return 0;
   const ke=+$("evCons").value||0;
   if(v.t==='PHEV'){const e=ke>0?uf*(km/ke*pkwh*perd):0;const f=v.l>0?(1-uf)*(km/v.l*pbenc):0;return e+f;}
   return ke>0?km/ke*pkwh*perd:0;}
+let KMYEAR=18000;
+function syncKm(src){let yr;if(src==="sem"){yr=M("kmSem")*52;$("kmMes").value=fmt(Math.round(yr/12));}else{yr=M("kmMes")*12;$("kmSem").value=fmt(Math.round(yr/52));}KMYEAR=yr;$("kmAnio").value=fmt(yr);calc();}
 function calc(){
   if(!curEv||!curIc){return;}
-  const km=M("kmMes")*12,Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
+  const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
   const evP=M("evPrecio"),icP=M("icPrecio");
   const evEnergy=energyEv(curEv,km,pkwh,pbenc,perd,uf);
   const icFuel=curIc&&curIc.di?pdie:pbenc; const _kl=+$("icCons").value||0; const icEnergy=_kl>0?km/_kl*icFuel:0;
@@ -199,7 +202,9 @@ $("evMarca").onchange=()=>refreshModelo('ev');$("evModelo").onchange=()=>selectM
 $("icMarca").onchange=()=>refreshModelo('ic');$("icModelo").onchange=()=>selectModelo('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
 ["evCons","icCons","perdidas","ufphev","resEv","resIc"].forEach(id=>$(id).addEventListener("input",calc));
+$("kmMes").addEventListener("input",()=>syncKm("mes"));$("kmSem").addEventListener("input",()=>syncKm("sem"));
 bindMoney();
+syncKm("mes");
 $("evTec").value="BEV";refresh('ev');
 $("icTec").value="ICE";refresh('ic');
 </script></body></html>
