@@ -59,7 +59,7 @@ small.hint{color:var(--mut);font-size:10px}
   <small class="hint">Permiso de circulación e impuesto verde se toman del dato real por modelo (SII / Ley 20.780). PHEV usa mezcla eléctrico+bencina.</small></div>
 <details><summary>Supuestos de costo (auto por modelo, editables)</summary>
   <div class="section-title">Valor residual al final del período (%) <small class="hint">curva real SII si está disponible</small></div>
-  <div class="row2"><div><label>Eléctrico</label><input id="resEv" type="number" step="0.1"></div><div><label>Combustión</label><input id="resIc" type="number" step="0.1"></div></div>
+  <div class="row2"><div><label>Eléctrico</label><input id="resEv" type="number" step="0.1" value="60"></div><div><label>Combustión</label><input id="resIc" type="number" step="0.1" value="50"></div></div>
   <div class="section-title">Mantención (CLP/año)</div>
   <div class="row2"><div><label>Eléctrico</label><input id="mantEv" class="money" type="text" inputmode="numeric"></div><div><label>Combustión</label><input id="mantIc" class="money" type="text" inputmode="numeric"></div></div>
   <div class="section-title">Seguro (CLP/año)</div>
@@ -111,22 +111,21 @@ function evSpecs(v){curEv=v;if(!v){$("evSpecs").innerHTML='<div>Selecciona marca
   $("evSpecs").innerHTML=`<div>Tipo: <b>${TECLABEL[v.t]}</b></div><div>Año: <b>${v.an}</b></div><div>Rendimiento: <b>${v.kw||'—'} km/kWh${v.t==='PHEV'?' + '+(v.l||'—')+' km/L':''}</b></div><div>Permiso real: <b>${v.pm?CLP(v.pm):'s/d'}</b></div>`+((v.t==='BEV'&&!v.kw)||(v.t==='PHEV'&&!v.kw&&!v.l)||v.t==='FCEV'?'<div style="color:#d84315">Sin dato de rendimiento: energía no calculable</div>':'')+(v.bf?'<div class="badge">Beneficio Ley 21.505 (permiso 25%)</div>':'');}
 function icSpecs(v){curIc=v;if(!v){$("icSpecs").innerHTML='<div>Selecciona marca y modelo</div>';return;}$("icPrecio").value=fmt(v.p);$("icCons").value=v.l||0;
   $("icSpecs").innerHTML=`<div>Tipo: <b>${TECLABEL[v.t]}</b></div><div>Año: <b>${v.an}</b></div><div>Rendimiento: <b>${v.l?v.l:'—'} km/L</b></div><div>CO₂: <b>${v.co||'—'} g/km</b></div><div>Permiso real: <b>${v.pm?CLP(v.pm):'s/d'}</b></div><div>Imp. verde: <b>${CLP((v.iv||0)*M("utm"))}</b></div>`+(!v.l?'<div style="color:#d84315">Sin dato de rendimiento: combustible no calculable</div>':'');}
-function energyEv(v,km,pkwh,pbenc,perd,uf){if(!v)return 0;
+function energyEv(v,km,pkwh,pbenc,perd,uf){
   const ke=+$("evCons").value||0;
-  if(v.t==='PHEV'){const e=ke>0?uf*(km/ke*pkwh*perd):0;const f=v.l>0?(1-uf)*(km/v.l*pbenc):0;return e+f;}
+  if(v&&v.t==='PHEV'){const e=ke>0?uf*(km/ke*pkwh*perd):0;const f=v.l>0?(1-uf)*(km/v.l*pbenc):0;return e+f;}
   return ke>0?km/ke*pkwh*perd:0;}
 let KMYEAR=18000;
 function syncKm(src){let yr;if(src==="dia")yr=M("kmDia")*365;else if(src==="sem")yr=M("kmSem")*52;else yr=M("kmMes")*12;if(src!=="dia")$("kmDia").value=fmt(Math.round(yr/365));if(src!=="sem")$("kmSem").value=fmt(Math.round(yr/52));if(src!=="mes")$("kmMes").value=fmt(Math.round(yr/12));KMYEAR=yr;$("kmAnio").value=fmt(yr);calc();}
 function calc(){
-  if(!curEv||!curIc){return;}
   const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
   const evP=M("evPrecio"),icP=M("icPrecio");
   const evEnergy=energyEv(curEv,km,pkwh,pbenc,perd,uf);
   const icFuel=curIc&&curIc.di?pdie:pbenc; const _kl=+$("icCons").value||0; const icEnergy=_kl>0?km/_kl*icFuel:0;
   const evMant=M("mantEv"),icMant=M("mantIc"),evSeg=M("segEv"),icSeg=M("segIc");
   const evPerm=M("permEv"),icPerm=M("permIc"),evIv=M("ivEv"),icIv=M("ivIc");
-  const evDep=evP*(1-(+$("resEv").value/100)),icDep=icP*(1-(+$("resIc").value/100));
-  const wb=(curEv&&(curEv.t==='BEV'||curEv.t==='PHEV'))?M("wallbox"):0;
+  const _rE=parseFloat($("resEv").value),_rI=parseFloat($("resIc").value);const rEv=isNaN(_rE)?60:_rE,rIc=isNaN(_rI)?50:_rI;const evDep=evP*(1-rEv/100),icDep=icP*(1-rIc/100);
+  const wb=(!curEv||curEv.t==='BEV'||curEv.t==='PHEV')?M("wallbox"):0;
   const evRun=evEnergy+evMant+evSeg+evPerm,icRun=icEnergy+icMant+icSeg+icPerm;
   const evTCO=evDep+evRun*Y+wb+evIv,icTCO=icDep+icRun*Y+icIv;
   $("vEv").textContent=CLP(evTCO);$("vIc").textContent=CLP(icTCO);
