@@ -131,21 +131,30 @@ function calc(){
   const dif=icTCO-evTCO,evWins=dif>0;$("vDif").textContent=CLP(Math.abs(dif));$("vDif").style.color=evWins?"var(--evtxt)":"var(--icetxt)";
   $("sDif").textContent=evWins?"a favor del eléctrico":"a favor del combustión";
   $("kEv").className="kpi"+(evWins?" winner":"");$("kIc").className="kpi"+(!evWins?" winner":"");
-  const evUp=evP+wb+evIv,icUp=icP+icIv,evM=evRun/12,icM=icRun/12;let be=null;
-  for(let m=0;m<=Y*12;m++){if(evUp+evM*m<=icUp+icM*m){be=m;break;}}
-  $("vBe").textContent=be===null?">"+Y+" años":(be===0?"inmediato":(be<24?be+" meses":(be/12).toFixed(1)+" años"));
+  const evUp=evP+wb+evIv,icUp=icP+icIv,evM=evRun/12,icM=icRun/12;
+  let cross=null;const dUp=evUp-icUp,dM=icM-evM;
+  if(dUp<=0)cross=0;else if(dM>0)cross=dUp/dM;
+  const beTxt=cross===null?">"+Y+" años":(cross<1?"inmediato":(cross<24?Math.round(cross)+" meses":(cross/12).toFixed(1)+" años"));
+  $("vBe").textContent=beTxt;
   const v=$("verdict");
-  if(evWins){v.style.background="#e8f5e9";v.style.borderColor="var(--good)";v.innerHTML=`En ${Y} años el <b>eléctrico/híbrido ahorra ${CLP(dif)}</b>`+(be!==null?` y recupera su mayor precio en <b>${be<24?be+" meses":(be/12).toFixed(1)+" años"}</b>.`:".");}
+  if(evWins){v.style.background="#e8f5e9";v.style.borderColor="var(--good)";v.innerHTML=`En ${Y} años el <b>eléctrico/híbrido ahorra ${CLP(dif)}</b>`+(cross!==null?` y recupera su mayor precio en <b>${beTxt}</b>.`:".");}
   else{v.style.background="#fbe9e7";v.style.borderColor="var(--ice)";v.innerHTML=`En ${Y} años el <b>combustión sale ${CLP(-dif)} más barato</b> en este escenario.`;}
   const rows=[["Depreciación (precio − residual)",evDep,icDep],["Energía / combustible",evEnergy*Y,icEnergy*Y],["Mantención",evMant*Y,icMant*Y],["Seguro",evSeg*Y,icSeg*Y],["Permiso de circulación",evPerm*Y,icPerm*Y],["Impuesto verde + wallbox",wb+evIv,icIv]];
   $("breakdown").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="ev">${CLP(r[1])}</td><td class="ice">${CLP(r[2])}</td></tr>`).join("")+`<tr class="total"><td>TCO total</td><td class="ev">${CLP(evTCO)}</td><td class="ice">${CLP(icTCO)}</td></tr>`;
   $("ckmEv").textContent=CLP(evTCO/(km*Y))+"/km";$("ckmIc").textContent=CLP(icTCO/(km*Y))+"/km";
-  drawChart(Y,evUp,evM,icUp,icM);}
-let chart;function drawChart(Y,evUp,evM,icUp,icM){const labels=[],ev=[],ic=[],step=Math.max(1,Math.round(Y*12/60));
-  for(let m=0;m<=Y*12;m+=step){labels.push(m);ev.push(evUp+evM*m);ic.push(icUp+icM*m);}
-  const d={labels,datasets:[{label:"Eléctrico",data:ev,borderColor:"#4caf50",backgroundColor:"rgba(76,175,80,.08)",fill:true,tension:.1,pointRadius:0,borderWidth:2},{label:"Combustión",data:ic,borderColor:"#ff5722",backgroundColor:"rgba(255,87,34,.06)",fill:true,tension:.1,pointRadius:0,borderWidth:2}]};
-  const o={responsive:true,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:"#37474f"}},tooltip:{callbacks:{title:i=>"Mes "+i[0].label,label:c=>c.dataset.label+": "+CLP(c.raw)}}},scales:{x:{title:{display:true,text:"meses",color:"#607d8b"},ticks:{color:"#607d8b"},grid:{color:"#e6ece6"}},y:{ticks:{color:"#607d8b",callback:v=>"$"+(v/1e6).toFixed(0)+"M"},grid:{color:"#e6ece6"}}}};
-  if(chart){chart.data=d;chart.options=o;chart.update();}else chart=new Chart($("chart"),{type:"line",data:d,options:o});}
+  drawChart(Y,evUp,evM,icUp,icM,cross);}
+let chart,BE={};
+function drawChart(Y,evUp,evM,icUp,icM,cross){
+  BE={cross,evUp,evM};
+  let H=Y*12;
+  if(cross!==null&&isFinite(cross)&&cross>0)H=Math.min(360,Math.max(Y*12,Math.ceil(cross*1.2)+2));
+  const step=Math.max(1,Math.round(H/80)),ev=[],ic=[];
+  for(let m=0;m<=H;m+=step){ev.push({x:m,y:evUp+evM*m});ic.push({x:m,y:icUp+icM*m});}
+  if(ev.length&&ev[ev.length-1].x!==H){ev.push({x:H,y:evUp+evM*H});ic.push({x:H,y:icUp+icM*H});}
+  const d={datasets:[{label:"Eléctrico",data:ev,borderColor:"#4caf50",backgroundColor:"rgba(76,175,80,.08)",fill:true,tension:0,pointRadius:0,borderWidth:2},{label:"Combustión",data:ic,borderColor:"#ff5722",backgroundColor:"rgba(255,87,34,.06)",fill:true,tension:0,pointRadius:0,borderWidth:2}]};
+  const o={responsive:true,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:"#37474f"}},tooltip:{callbacks:{title:i=>"Mes "+Math.round(i[0].parsed.x),label:c=>c.dataset.label+": "+CLP(c.parsed.y)}}},scales:{x:{type:"linear",min:0,max:H,title:{display:true,text:"meses",color:"#607d8b"},ticks:{color:"#607d8b",stepSize:Math.max(1,Math.round(H/12))},grid:{color:"#e6ece6"}},y:{ticks:{color:"#607d8b",callback:v=>"$"+(v/1e6).toFixed(1)+"M"},grid:{color:"#e6ece6"}}}};
+  const plug={id:"bex",afterDatasetsDraw(c){const cr=BE.cross;if(cr===null||!isFinite(cr)||cr<=0)return;const sx=c.scales.x,sy=c.scales.y;if(cr>sx.max)return;const px=sx.getPixelForValue(cr),py=sy.getPixelForValue(BE.evUp+BE.evM*cr);const ctx=c.ctx,a=c.chartArea;ctx.save();ctx.strokeStyle="#2b6ca6";ctx.setLineDash([5,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(px,a.top);ctx.lineTo(px,a.bottom);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#2b6ca6";ctx.beginPath();ctx.arc(px,py,4.5,0,6.3);ctx.fill();const t=cr<24?Math.round(cr)+" meses":(cr/12).toFixed(1)+" años";ctx.font="bold 11px Arial";const rt=px>a.right-95;ctx.textAlign=rt?"right":"left";ctx.fillText("Equilibrio: "+t,px+(rt?-6:6),a.top+12);ctx.restore();}};
+  if(chart){chart.data=d;chart.options=o;chart.update();}else chart=new Chart($("chart"),{type:"line",data:d,options:o,plugins:[plug]});}
 function bindMoney(){document.querySelectorAll("input.money").forEach(el=>{el.addEventListener("input",()=>{const n=parseInt(el.value.replace(/[^0-9]/g,""),10);el.value=isNaN(n)?"":n.toLocaleString("es-CL");calc();});});}
 function setSel(id,values,makeOpt,allLabel){const el=$(id);const cur=el.value;el.innerHTML='<option value="">'+allLabel+'</option>'+values.map(makeOpt).join("");el.value=values.map(String).includes(cur)?cur:"";}
 function fillMarcasKeep(list,sel){const m=[...new Set(list.map(v=>v.ma))].sort();sel.innerHTML='<option value="">— Marca —</option>'+m.map(x=>`<option value="${x}">${x}</option>`).join("");sel.value="";}
