@@ -181,7 +181,7 @@ function refreshModelo(side){
   if(!ms.length){$(side+'Modelo').innerHTML='<option value="">— Modelo —</option>';spec(null);applyCosts();calc();return;}
   $(side+'Modelo').innerHTML=ms.map(v=>`<option value="${v.id}">${label(v)}</option>`).join("");
   $(side+'Modelo').value=ms[0].id;
-  spec(ms[0]);applyCosts();calc();
+  selectModelo(side);
 }
 function selectModelo(side){
   const D=side==='ev'?DATA.ev:DATA.ic;const spec=side==='ev'?evSpecs:icSpecs;
@@ -192,13 +192,6 @@ function selectModelo(side){
   setOpt(side+'Tec',sel.t,TECLABEL[sel.t]||sel.t);
   setOpt(side+'Carr',sel.cr||'',sel.cr||'');
   setOpt(side+'Anio',String(sel.an),String(sel.an));
-  const list=flt(D,$(side+'Tec').value,$(side+'Anio').value,$(side+'Carr').value);
-  const ms=[...new Set(list.map(v=>v.ma))].sort();
-  $(side+'Marca').innerHTML='<option value="">— Marca —</option>'+ms.map(x=>`<option value="${x}">${x}</option>`).join("");
-  $(side+'Marca').value=sel.ma;
-  const models=list.filter(v=>v.ma===sel.ma);
-  $(side+'Modelo').innerHTML=models.map(v=>`<option value="${v.id}">${label(v)}</option>`).join("");
-  $(side+'Modelo').value=sel.id;
   spec(sel);applyCosts();calc();
 }
 ['Tec','Anio','Carr'].forEach(k=>{$('ev'+k).onchange=()=>refresh('ev');$('ic'+k).onchange=()=>refresh('ic');});
