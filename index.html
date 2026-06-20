@@ -171,11 +171,11 @@ function calcSolar(){
   const hsp=+$("hsp").value||0,pW=+$("panelW").value||0,pr=(+$("pr").value||0)/100;
   if(need<=0){el.innerHTML='Ingresa rendimiento eléctrico (km/kWh) y kilómetros para simular los paneles.';return;}
   const chargers=[2.3,7.4,11,22,50];let rec=chargers.find(p=>need/p<=hEst),fits=true;if(!rec){rec=50;fits=false;}
-  const tCarga=need/rec,perPanel=(pW/1000)*hsp*pr,panels=perPanel>0?Math.ceil(need/perPanel):0;
+  const tCarga=need/rec,perPanel=(pW/1000)*hsp*pr,target=need*1.25,panels=perPanel>0?Math.ceil(target/perPanel):0;
   const kwp=panels*pW/1000,genDay=panels*perPanel,genYr=genDay*365,recTxt=String(rec).replace('.',',');
   el.innerHTML=`Cargador recomendado: <b>${recTxt} kW</b> · tiempo de carga ≈ <b>${tCarga.toFixed(1)} h</b>${fits?'':' (ningún cargador estándar cubre la carga en las horas estacionado)'}. `+
     `Energía a cubrir: <b>${need.toFixed(1)} kWh/día</b>. `+
-    `Paneles necesarios: <b>${panels} × ${pW} W</b> = <b>${kwp.toFixed(1)} kWp</b>. `+
+    `Paneles necesarios (sistema +25% por pérdidas): <b>${panels} × ${pW} W</b> = <b>${kwp.toFixed(1)} kWp</b>. `+
     `Generación estimada: <b>${fmt(genDay)} kWh/día</b> (${fmt(genYr)} kWh/año), con ${String(hsp).replace('.',',')} HSP y ${Math.round(pr*100)}% de rendimiento.`;
 }
 function calc(){
