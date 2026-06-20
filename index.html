@@ -41,42 +41,42 @@ small.hint{color:var(--mut);font-size:10px}
 <div class="note0">613 eléctricos/híbridos enchufables y 3212 combustión/híbridos · impuesto verde, permiso real (Ley 21.505) y costos por modelo</div>
 <div class="grid2">
   <div class="card"><h2><span class="dot" style="background:var(--ev)"></span>Eléctrico / Híbrido enchufable</h2>
-    <div class="row3"><div><label>Tecnología</label><select id="evTec"></select></div><div><label>Carrocería</label><select id="evCarr"></select></div><div><label>Año</label><select id="evAnio"></select></div></div>
-    <label>Marca</label><select id="evMarca"></select><label>Modelo</label><select id="evModelo"></select>
-    <div class="row2"><div><label>Precio (CLP)</label><input id="evPrecio" class="money" type="text" inputmode="numeric"></div><div><label>Rendimiento (km/kWh)</label><input id="evCons" type="number" step="0.1"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
+    <div class="row3"><div><label for="evTec">Tecnología</label><select id="evTec" aria-label="Tecnología"></select></div><div><label for="evCarr">Carrocería</label><select id="evCarr" aria-label="Carrocería"></select></div><div><label for="evAnio">Año</label><select id="evAnio" aria-label="Año"></select></div></div>
+    <label for="evMarca">Marca</label><select id="evMarca" aria-label="Marca"></select><label for="evModelo">Modelo</label><select id="evModelo" aria-label="Modelo"></select>
+    <div class="row2"><div><label for="evPrecio">Precio (CLP)</label><input id="evPrecio" class="money" type="text" inputmode="numeric" aria-label="Precio (CLP)"></div><div><label for="evCons">Rendimiento (km/kWh)</label><input id="evCons" type="number" step="0.1" aria-label="Rendimiento (km/kWh)"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
     <div class="specs" id="evSpecs"></div></div>
   <div class="card"><h2><span class="dot" style="background:var(--ice)"></span>Combustión / Híbrido</h2>
-    <div class="row3"><div><label>Tecnología</label><select id="icTec"></select></div><div><label>Carrocería</label><select id="icCarr"></select></div><div><label>Año</label><select id="icAnio"></select></div></div>
-    <label>Marca</label><select id="icMarca"></select><label>Modelo</label><select id="icModelo"></select>
-    <div class="row2"><div><label>Precio (CLP)</label><input id="icPrecio" class="money" type="text" inputmode="numeric"></div><div><label>Rendimiento (km/L)</label><input id="icCons" type="number" step="0.1"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
+    <div class="row3"><div><label for="icTec">Tecnología</label><select id="icTec" aria-label="Tecnología"></select></div><div><label for="icCarr">Carrocería</label><select id="icCarr" aria-label="Carrocería"></select></div><div><label for="icAnio">Año</label><select id="icAnio" aria-label="Año"></select></div></div>
+    <label for="icMarca">Marca</label><select id="icMarca" aria-label="Marca"></select><label for="icModelo">Modelo</label><select id="icModelo" aria-label="Modelo"></select>
+    <div class="row2"><div><label for="icPrecio">Precio (CLP)</label><input id="icPrecio" class="money" type="text" inputmode="numeric" aria-label="Precio (CLP)"></div><div><label for="icCons">Rendimiento (km/L)</label><input id="icCons" type="number" step="0.1" aria-label="Rendimiento (km/L)"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
     <div class="specs" id="icSpecs"></div></div>
 </div>
 <div class="card" style="margin-top:16px"><h2>Uso y precios de energía</h2>
-  <div class="row3" style="grid-template-columns:repeat(4,1fr)"><div><label>Kilómetros al día</label><input id="kmDia" class="money" type="text" inputmode="numeric" value="100"></div><div><label>Kilómetros a la semana</label><input id="kmSem" class="money" type="text" inputmode="numeric" value="702"></div><div><label>Kilómetros al mes</label><input id="kmMes" class="money" type="text" inputmode="numeric" value="3.042"></div><div><label>Kilómetros al año</label><input id="kmAnio" class="money" type="text" inputmode="numeric" value="36.500" readonly style="background:#eef3ee;font-weight:700;color:#37474f"></div></div>
-  <div class="row3" style="margin-top:4px"><div><label>Período (años)</label><input id="anios" type="number" value="5"></div><div><label>Electricidad (CLP/kWh)</label><input id="pkwh" class="money" type="text" inputmode="numeric" value="150"></div><div><label>Bencina (CLP/L)</label><input id="pbenc" class="money" type="text" inputmode="numeric" value="1.539"></div></div>
-  <div class="row3" style="margin-top:4px"><div><label>Diésel (CLP/L)</label><input id="pdie" class="money" type="text" inputmode="numeric" value="1.512"></div><div><label>UTM (CLP)</label><input id="utm" class="money" type="text" inputmode="numeric" value="70.000"></div><div><label>Pérdidas de carga (%)</label><input id="perdidas" type="number" value="10"></div></div>
-  <div class="row3" style="margin-top:4px"><div><label>% km eléctrico (PHEV)</label><input id="ufphev" type="number" value="60"></div><div><label>Wallbox (CLP, único)</label><input id="wallbox" class="money" type="text" inputmode="numeric" value="450.000"></div><div><label>Factor red eléctrica (kgCO₂/kWh)</label><input id="factElec" type="number" step="0.01" min="0" value="0.40"></div></div>
+  <div class="row3" style="grid-template-columns:repeat(4,1fr)"><div><label for="kmDia">Kilómetros al día</label><input id="kmDia" class="money" type="text" inputmode="numeric" value="100" aria-label="Kilómetros al día"></div><div><label for="kmSem">Kilómetros a la semana</label><input id="kmSem" class="money" type="text" inputmode="numeric" value="702" aria-label="Kilómetros a la semana"></div><div><label for="kmMes">Kilómetros al mes</label><input id="kmMes" class="money" type="text" inputmode="numeric" value="3.042" aria-label="Kilómetros al mes"></div><div><label for="kmAnio">Kilómetros al año</label><input id="kmAnio" class="money" type="text" inputmode="numeric" value="36.500" readonly style="background:#eef3ee;font-weight:700;color:#37474f" aria-label="Kilómetros al año"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label for="anios">Período (años)</label><input id="anios" type="number" value="5" aria-label="Período (años)"></div><div><label for="pkwh">Electricidad (CLP/kWh)</label><input id="pkwh" class="money" type="text" inputmode="numeric" value="150" aria-label="Electricidad (CLP/kWh)"></div><div><label for="pbenc">Bencina (CLP/L)</label><input id="pbenc" class="money" type="text" inputmode="numeric" value="1.539" aria-label="Bencina (CLP/L)"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label for="pdie">Diésel (CLP/L)</label><input id="pdie" class="money" type="text" inputmode="numeric" value="1.512" aria-label="Diésel (CLP/L)"></div><div><label for="utm">UTM (CLP)</label><input id="utm" class="money" type="text" inputmode="numeric" value="70.000" aria-label="UTM (CLP)"></div><div><label for="perdidas">Pérdidas de carga (%)</label><input id="perdidas" type="number" value="10" aria-label="Pérdidas de carga (%)"></div></div>
+  <div class="row3" style="margin-top:4px"><div><label for="ufphev">% km eléctrico (PHEV)</label><input id="ufphev" type="number" value="60" aria-label="% km eléctrico (PHEV)"></div><div><label for="wallbox">Wallbox (CLP, único)</label><input id="wallbox" class="money" type="text" inputmode="numeric" value="450.000" aria-label="Wallbox (CLP, único)"></div><div><label for="factElec">Factor red eléctrica (kgCO₂/kWh)</label><input id="factElec" type="number" step="0.01" min="0" value="0.40" aria-label="Factor red eléctrica (kgCO₂/kWh)"></div></div>
   <small class="hint">Permiso de circulación e impuesto verde se toman del dato real por modelo (SII / Ley 20.780). PHEV usa mezcla eléctrico+bencina.</small></div>
   <div class="card" style="margin-top:16px"><h2>Carga del vehículo eléctrico</h2>
     <div class="row3" style="grid-template-columns:repeat(4,1fr)">
-      <div><label>Horas de uso al día</label><input id="hUso" type="number" min="0" max="24" step="0.5" value="2"></div>
-      <div><label>Horas estacionado al día</label><input id="hEstac" type="number" min="0" max="24" step="0.5" value="22"></div>
-      <div><label>Potencia de carga</label><select id="potCarga"><option value="2.3">Enchufe hogar — 2,3 kW</option><option value="7.4" selected>Wallbox — 7,4 kW</option><option value="11">Wallbox trifásica — 11 kW</option><option value="22">Wallbox trifásica — 22 kW</option><option value="50">Carga rápida DC — 50 kW</option></select></div>
-      <div><label>Horas disponibles para cargar</label><input id="hDispo" type="text" readonly value="22 h" style="background:#eef3ee;font-weight:700;color:#37474f"></div>
+      <div><label for="hUso">Horas de uso al día</label><input id="hUso" type="number" min="0" max="24" step="0.5" value="2" aria-label="Horas de uso al día"></div>
+      <div><label for="hEstac">Horas estacionado al día</label><input id="hEstac" type="number" min="0" max="24" step="0.5" value="22" aria-label="Horas estacionado al día"></div>
+      <div><label for="potCarga">Potencia de carga</label><select id="potCarga" aria-label="Potencia de carga"><option value="2.3">Enchufe hogar — 2,3 kW</option><option value="7.4" selected>Wallbox — 7,4 kW</option><option value="11">Wallbox trifásica — 11 kW</option><option value="22">Wallbox trifásica — 22 kW</option><option value="50">Carga rápida DC — 50 kW</option></select></div>
+      <div><label for="hDispo">Horas disponibles para cargar</label><input id="hDispo" type="text" readonly value="22 h" style="background:#eef3ee;font-weight:700;color:#37474f" aria-label="Horas disponibles para cargar"></div>
     </div>
     <div id="cargaInfo" class="hint" style="margin-top:8px"></div>
   </div>
 <details><summary>Supuestos de costo (auto por modelo, editables)</summary>
   <div class="section-title">Valor residual al final del período (%) <small class="hint">curva real SII si está disponible</small></div>
-  <div class="row2"><div><label>Eléctrico</label><input id="resEv" type="number" step="0.1" value="60"></div><div><label>Combustión</label><input id="resIc" type="number" step="0.1" value="50"></div></div>
+  <div class="row2"><div><label for="resEv">Eléctrico</label><input id="resEv" type="number" step="0.1" value="60" aria-label="Eléctrico"></div><div><label for="resIc">Combustión</label><input id="resIc" type="number" step="0.1" value="50" aria-label="Combustión"></div></div>
   <div class="section-title">Mantención (CLP/año)</div>
-  <div class="row2"><div><label>Eléctrico</label><input id="mantEv" class="money" type="text" inputmode="numeric"></div><div><label>Combustión</label><input id="mantIc" class="money" type="text" inputmode="numeric"></div></div>
+  <div class="row2"><div><label for="mantEv">Eléctrico</label><input id="mantEv" class="money" type="text" inputmode="numeric" aria-label="Eléctrico"></div><div><label for="mantIc">Combustión</label><input id="mantIc" class="money" type="text" inputmode="numeric" aria-label="Combustión"></div></div>
   <div class="section-title">Seguro (CLP/año)</div>
-  <div class="row2"><div><label>Eléctrico</label><input id="segEv" class="money" type="text" inputmode="numeric"></div><div><label>Combustión</label><input id="segIc" class="money" type="text" inputmode="numeric"></div></div>
+  <div class="row2"><div><label for="segEv">Eléctrico</label><input id="segEv" class="money" type="text" inputmode="numeric" aria-label="Eléctrico"></div><div><label for="segIc">Combustión</label><input id="segIc" class="money" type="text" inputmode="numeric" aria-label="Combustión"></div></div>
   <div class="section-title">Permiso de circulación (CLP/año, real SII)</div>
-  <div class="row2"><div><label>Eléctrico</label><input id="permEv" class="money" type="text" inputmode="numeric"></div><div><label>Combustión</label><input id="permIc" class="money" type="text" inputmode="numeric"></div></div>
+  <div class="row2"><div><label for="permEv">Eléctrico</label><input id="permEv" class="money" type="text" inputmode="numeric" aria-label="Eléctrico"></div><div><label for="permIc">Combustión</label><input id="permIc" class="money" type="text" inputmode="numeric" aria-label="Combustión"></div></div>
   <div class="section-title">Impuesto verde (CLP, único)</div>
-  <div class="row2"><div><label>Eléctrico</label><input id="ivEv" class="money" type="text" inputmode="numeric"></div><div><label>Combustión</label><input id="ivIc" class="money" type="text" inputmode="numeric"></div></div>
+  <div class="row2"><div><label for="ivEv">Eléctrico</label><input id="ivEv" class="money" type="text" inputmode="numeric" aria-label="Eléctrico"></div><div><label for="ivIc">Combustión</label><input id="ivIc" class="money" type="text" inputmode="numeric" aria-label="Combustión"></div></div>
 </details>
 <div class="verdict" id="verdict"></div>
 <div class="kpis">
@@ -98,9 +98,9 @@ small.hint{color:var(--mut);font-size:10px}
 </div>
 <div class="card" style="margin-top:16px"><h2>Simulador de paneles solares para la carga</h2>
   <div class="row3">
-    <div><label>Horas sol pico (HSP)</label><input id="hsp" type="number" step="0.1" min="0" value="5.5"></div>
-    <div><label>Potencia por panel (W)</label><input id="panelW" type="number" step="10" min="0" value="550"></div>
-    <div><label>Rendimiento sistema (%)</label><input id="pr" type="number" step="1" min="0" max="100" value="80"></div>
+    <div><label for="hsp">Horas sol pico (HSP)</label><input id="hsp" type="number" step="0.1" min="0" value="5.5" aria-label="Horas sol pico (HSP)"></div>
+    <div><label for="panelW">Potencia por panel (W)</label><input id="panelW" type="number" step="10" min="0" value="550" aria-label="Potencia por panel (W)"></div>
+    <div><label for="pr">Rendimiento sistema (%)</label><input id="pr" type="number" step="1" min="0" max="100" value="80" aria-label="Rendimiento sistema (%)"></div>
   </div>
   <div id="solarInfo" class="hint" style="margin-top:8px"></div>
   <small class="hint">HSP referencial Chile: norte ≈6,0-6,5 · centro ≈5,0-5,5 · sur ≈3,5-4,0. El cargador recomendado es el menor estándar que cubre la carga diaria dentro de las horas estacionado.</small>
