@@ -295,6 +295,16 @@ function loadSel(side){
   setOpt(side+'Anio',String(sel.an),String(sel.an));
   spec(sel);applyCosts();calc();
 }
+function onMarcaSel(side){
+  fullFilters(side);
+  const spec=side==='ev'?evSpecs:icSpecs;
+  const marca=$(side+'Marca').value;
+  if(!marca){$(side+'Modelo').innerHTML='<option value="">— Modelo —</option>';$(side+'Modelo').value='';spec(null);applyCosts();calc();return;}
+  const ms=modelosFor(side,false);
+  ms.sort((a,b)=>(b.an-a.an)||label(a).localeCompare(label(b)));
+  $(side+'Modelo').innerHTML='<option value="">— Modelo —</option>'+ms.map(v=>`<option value="${v.id}">${label(v)}</option>`).join('');
+  $(side+'Modelo').value='';spec(null);applyCosts();calc();
+}
 function refreshModelo(side){
   const marca=$(side+'Marca').value;
   if(!marca){$(side+'Modelo').innerHTML='<option value="">— Modelo —</option>';loadSel(side);return;}
@@ -324,8 +334,8 @@ function onModelo(side){
 function selectModelo(side){loadSel(side);}
 
 ['Tec','Anio','Carr'].forEach(k=>{$('ev'+k).onchange=()=>refresh('ev');$('ic'+k).onchange=()=>refresh('ic');});
-$("evMarca").onchange=()=>refreshModelo('ev');$("evModelo").onchange=()=>loadSel('ev');
-$("icMarca").onchange=()=>refreshModelo('ic');$("icModelo").onchange=()=>loadSel('ic');
+$("evMarca").onchange=()=>onMarcaSel('ev');$("evModelo").onchange=()=>loadSel('ev');
+$("icMarca").onchange=()=>onMarcaSel('ic');$("icModelo").onchange=()=>loadSel('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
 ["evCons","icCons","perdidas","ufphev","resEv","resIc","factElec"].forEach(id=>$(id).addEventListener("input",calc));
 ["hsp","panelW","pr"].forEach(id=>$(id).addEventListener("input",calcSolar));
