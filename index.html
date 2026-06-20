@@ -121,7 +121,7 @@ function fillMarcas(list,sel){const m=[...new Set(list.map(v=>v.ma))].sort();sel
 function fillModelos(list,marca,sel){const ms=list.filter(v=>v.ma===marca);sel.innerHTML=ms.map(v=>`<option value="${v.id}">${label(v)}</option>`).join("");}
 function resOf(v,Y){const b=(Y===5&&v.rs>0)?v.rs:residualParam(v.t,Y);return Math.max(12,Math.min(92,b));}
 function applyCosts(){const Y=+$("anios").value,utm=M("utm");
-  if(curEv){$("resEv").value="60";$("mantEv").value=fmt(curEv.mt);$("segEv").value=fmt(curEv.sg);
+  if(curEv){$("resEv").value="60";$("mantEv").value=fmt(curEv.mt);$("segEv").value=fmt(641439);
     $("permEv").value=fmt(curEv.pm||Math.round(curEv.p*0.0025));$("ivEv").value=fmt((curEv.iv||0)*utm);}
   if(curIc){$("resIc").value=resOf(curIc,Y).toFixed(1);$("mantIc").value=fmt(curIc.mt);$("segIc").value=fmt(curIc.sg);
     $("permIc").value=fmt(curIc.pm||Math.round(curIc.p*0.01));$("ivIc").value=fmt((curIc.iv||0)*utm);}}
