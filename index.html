@@ -96,6 +96,15 @@ small.hint{color:var(--mut);font-size:10px}
   <div id="co2Save" class="verdict" style="margin-top:12px"></div>
   <small class="hint">Combustión: 2,31 kgCO₂/L bencina · 2,68 kgCO₂/L diésel (tank-to-wheel). Eléctrico: consumo × factor de la red (editable; SEN Chile ≈0,40 kgCO₂/kWh). 1 árbol absorbe ≈22 kgCO₂/año.</small>
 </div>
+<div class="card" style="margin-top:16px"><h2>Simulador de paneles solares para la carga</h2>
+  <div class="row3">
+    <div><label>Horas sol pico (HSP)</label><input id="hsp" type="number" step="0.1" min="0" value="5.5"></div>
+    <div><label>Potencia por panel (W)</label><input id="panelW" type="number" step="10" min="0" value="550"></div>
+    <div><label>Rendimiento sistema (%)</label><input id="pr" type="number" step="1" min="0" max="100" value="80"></div>
+  </div>
+  <div id="solarInfo" class="hint" style="margin-top:8px"></div>
+  <small class="hint">HSP referencial Chile: norte ≈6,0-6,5 · centro ≈5,0-5,5 · sur ≈3,5-4,0. El cargador recomendado es el menor estándar que cubre la carga diaria dentro de las horas estacionado.</small>
+</div>
 <div class="note">Prototipo orientativo. Impuesto verde, permiso (real SII, incluye beneficio Ley 21.505), consumo y residual provienen de los datos por modelo (3CV/SII). Rendimiento en km/kWh y km/L. Mantención y seguro son estimaciones paramétricas editables. PHEV combina consumo eléctrico y bencina según el % de km eléctrico.</div>
 </div>
 <script>
@@ -153,6 +162,21 @@ function calcCarga(){
       (ok?`✅ Alcanza: en las ${$("hDispo").value} disponibles puedes reponer el consumo del día (capacidad: ${Math.round(avail)} kWh).`
          :`⚠️ No alcanza: necesitas ${hNeed.toFixed(1)} h y solo tienes ${$("hDispo").value}. Sube la potencia o reduce el uso diario.`);}
   $("cargaInfo").innerHTML=msg;
+  calcSolar();
+}
+function calcSolar(){
+  const el=$("solarInfo"); if(!el)return;
+  const ke=+$("evCons").value||0,kmd=M("kmDia"),perd=1+(+$("perdidas").value/100),hEst=+$("hEstac").value||0;
+  const need=ke>0?kmd/ke*perd:0;
+  const hsp=+$("hsp").value||0,pW=+$("panelW").value||0,pr=(+$("pr").value||0)/100;
+  if(need<=0){el.innerHTML='Ingresa rendimiento eléctrico (km/kWh) y kilómetros para simular los paneles.';return;}
+  const chargers=[2.3,7.4,11,22,50];let rec=chargers.find(p=>need/p<=hEst),fits=true;if(!rec){rec=50;fits=false;}
+  const tCarga=need/rec,perPanel=(pW/1000)*hsp*pr,panels=perPanel>0?Math.ceil(need/perPanel):0;
+  const kwp=panels*pW/1000,genDay=panels*perPanel,genYr=genDay*365,recTxt=String(rec).replace('.',',');
+  el.innerHTML=`Cargador recomendado: <b>${recTxt} kW</b> · tiempo de carga ≈ <b>${tCarga.toFixed(1)} h</b>${fits?'':' (ningún cargador estándar cubre la carga en las horas estacionado)'}. `+
+    `Energía a cubrir: <b>${need.toFixed(1)} kWh/día</b>. `+
+    `Paneles necesarios: <b>${panels} × ${pW} W</b> = <b>${kwp.toFixed(1)} kWp</b>. `+
+    `Generación estimada: <b>${fmt(genDay)} kWh/día</b> (${fmt(genYr)} kWh/año), con ${String(hsp).replace('.',',')} HSP y ${Math.round(pr*100)}% de rendimiento.`;
 }
 function calc(){
   const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
@@ -285,6 +309,7 @@ $("evMarca").onchange=()=>refreshModelo('ev');$("evModelo").onchange=()=>loadSel
 $("icMarca").onchange=()=>refreshModelo('ic');$("icModelo").onchange=()=>loadSel('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
 ["evCons","icCons","perdidas","ufphev","resEv","resIc","factElec"].forEach(id=>$(id).addEventListener("input",calc));
+["hsp","panelW","pr"].forEach(id=>$(id).addEventListener("input",calcSolar));
 $("hUso").addEventListener("input",()=>syncHoras("uso"));$("hEstac").addEventListener("input",()=>syncHoras("estac"));["potCarga"].forEach(id=>{$(id).addEventListener("input",calcCarga);$(id).addEventListener("change",calcCarga);});
 $("kmDia").addEventListener("input",()=>syncKm("dia"));$("kmMes").addEventListener("input",()=>syncKm("mes"));$("kmSem").addEventListener("input",()=>syncKm("sem"));
 bindMoney();
