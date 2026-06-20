@@ -181,6 +181,18 @@ function calcSolar(){
 function calc(){
   const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
   const evP=M("evPrecio"),icP=M("icPrecio");
+  if(!(evP>0&&icP>0)){
+    ["vEv","vIc","vDif","vBe","ckmEv","ckmIc","co2Ev","co2Ic"].forEach(function(id){var e=$(id);if(e)e.textContent="—";});
+    ["sEv","sIc","sDif","co2EvY","co2IcY"].forEach(function(id){var e=$(id);if(e)e.textContent="";});
+    var bd=$("breakdown");if(bd)bd.innerHTML="";
+    $("kEv").className="kpi";$("kIc").className="kpi";
+    var csg=$("co2Save");if(csg)csg.style.display="none";
+    var vd=$("verdict");vd.style.background="#eef3ee";vd.style.borderColor="#cfd8cf";
+    vd.innerHTML="Selecciona o ingresa <b>ambos vehículos</b> (marca y modelo, o precio y rendimiento manual) para ver la comparación de costos y emisiones.";
+    if(chart){chart.data={datasets:[]};chart.update();}
+    calcCarga();calcSolar();
+    return;
+  }
   const evEnergy=energyEv(curEv,km,pkwh,pbenc,perd,uf);
   const icFuel=curIc&&curIc.di?pdie:pbenc; const _kl=+$("icCons").value||0; const icEnergy=_kl>0?km/_kl*icFuel:0;
   const evMant=M("mantEv"),icMant=M("mantIc"),evSeg=M("segEv"),icSeg=M("segIc");
