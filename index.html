@@ -207,13 +207,14 @@ function calc(){
   $("sDif").textContent=evWins?"a favor del eléctrico":"a favor del combustión";
   $("kEv").className="kpi"+(evWins?" winner":"");$("kIc").className="kpi"+(!evWins?" winner":"");
   const evUp=evP+wb+evIv,icUp=icP+icIv,evM=evRun/12,icM=icRun/12;
-  let cross=null;const dUp=evUp-icUp,dM=icM-evM;
-  if(dUp<=0)cross=0;else if(dM>0)cross=dUp/dM;
-  const beTxt=cross===null?">"+Y+" años":(cross<1?"inmediato":(cross<24?Math.round(cross)+" meses":(cross/12).toFixed(1)+" años"));
+  const dUp=evUp-icUp,dM=icM-evM,noSobre=dUp<=0;
+  let cross=null;
+  if(noSobre)cross=0;else if(dM>0)cross=dUp/dM;
+  const beTxt=noSobre?"Sin sobreprecio":(cross===null?">"+Y+" años":(cross<1?"inmediato":(cross<24?Math.round(cross)+" meses":(cross/12).toFixed(1)+" años")));
   $("vBe").textContent=beTxt;
   const v=$("verdict");
-  if(evWins){v.style.background="#e8f5e9";v.style.borderColor="var(--good)";v.innerHTML=`En ${Y} años el <b>eléctrico/híbrido ahorra ${CLP(dif)}</b>`+(cross!==null?` y recupera su mayor precio en <b>${beTxt}</b>.`:".");}
-  else{v.style.background="#fbe9e7";v.style.borderColor="var(--ice)";v.innerHTML=`En ${Y} años el <b>combustión sale ${CLP(-dif)} más barato</b> en este escenario.`;}
+  if(evWins){v.style.background="#e8f5e9";v.style.borderColor="var(--good)";v.innerHTML=noSobre?`El <b>eléctrico/híbrido parte con menor precio</b> y además tiene menor costo total: <b>ahorra ${CLP(dif)}</b> en ${Y} años.`:`En ${Y} años el <b>eléctrico/híbrido ahorra ${CLP(dif)}</b>`+(cross!==null?` y recupera su mayor precio en <b>${beTxt}</b>.`:` (recupera el sobreprecio después de ${Y} años).`);}
+  else{v.style.background="#fbe9e7";v.style.borderColor="var(--ice)";v.innerHTML=noSobre?`El eléctrico parte más barato, pero en ${Y} años el <b>combustión queda ${CLP(-dif)} más barato</b> en costo total.`:`En ${Y} años el <b>combustión sale ${CLP(-dif)} más barato</b> en este escenario.`;}
   const rows=[["Depreciación (precio − residual)",evDep,icDep],["Energía / combustible",evEnergy*Y,icEnergy*Y],["Mantención",evMant*Y,icMant*Y],["Seguro",evSeg*Y,icSeg*Y],["Permiso de circulación",evPerm*Y,icPerm*Y],["Impuesto verde + wallbox",wb+evIv,icIv]];
   $("breakdown").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="ev">${CLP(r[1])}</td><td class="ice">${CLP(r[2])}</td></tr>`).join("")+`<tr class="total"><td>TCO total</td><td class="ev">${CLP(evTCO)}</td><td class="ice">${CLP(icTCO)}</td></tr>`;
   $("ckmEv").textContent=CLP(evTCO/(km*Y))+"/km";$("ckmIc").textContent=CLP(icTCO/(km*Y))+"/km";
