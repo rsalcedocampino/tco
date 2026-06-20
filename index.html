@@ -34,18 +34,19 @@ td.ev{color:var(--evtxt);font-weight:600}td.ice{color:var(--icetxt);font-weight:
 .note{font-size:11px;color:var(--mut);margin-top:14px;line-height:1.5}
 .verdict{background:#e8f5e9;border:1px solid var(--good);border-radius:14px;padding:16px;margin-top:16px;font-size:15px;color:#1b3a1f}.verdict b{font-size:18px}
 small.hint{color:var(--mut);font-size:10px}
+.rst{margin-left:auto;font-size:11px;background:#eef3ee;border:1px solid var(--line);color:#37474f;border-radius:8px;padding:4px 9px;cursor:pointer;text-transform:none;letter-spacing:0}.rst:hover{background:#e2ebe2}
 @media(max-width:820px){.row3,.row4{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.specs{grid-template-columns:1fr 1fr}}@media(max-width:700px){.grid2{grid-template-columns:1fr}.row2{grid-template-columns:1fr}}@media(max-width:520px){.wrap{padding:14px 10px 48px}h1{font-size:20px}.hd{padding:14px 16px}.row2,.row3,.row4{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.brandbar .tag{display:none}.brandbar .eflogo{height:38px}.wm{font-size:18px}table{font-size:12px}th,td{padding:7px 5px}.kpi .v{font-size:19px}.verdict{font-size:14px}.verdict b{font-size:16px}}
 </style></head><body><div class="wrap">
 <div class="brandbar"><img class="eflogo" src="logo%20y%20nombre%20-%20copia.png" alt="Energías Futuro"><span class="tag">Observatorio de Electromovilidad</span></div>
 <div class="hd"><h1>Calculadora TCO · Eléctrico vs Combustión</h1><div class="sub">Costo total de propiedad en Chile · datos 3CV + SII</div></div>
 <div class="note0">613 eléctricos/híbridos enchufables y 3212 combustión/híbridos · impuesto verde, permiso real (Ley 21.505) y costos por modelo</div>
 <div class="grid2">
-  <div class="card"><h2><span class="dot" style="background:var(--ev)"></span>Eléctrico / Híbrido enchufable</h2>
+  <div class="card"><h2><span class="dot" style="background:var(--ev)"></span>Eléctrico / Híbrido enchufable<button type="button" class="rst" onclick="resetSide('ev')">↺ Reiniciar</button></h2>
     <div class="row3"><div><label for="evTec">Tecnología</label><select id="evTec" aria-label="Tecnología"></select></div><div><label for="evCarr">Carrocería</label><select id="evCarr" aria-label="Carrocería"></select></div><div><label for="evAnio">Año</label><select id="evAnio" aria-label="Año"></select></div></div>
     <label for="evMarca">Marca</label><select id="evMarca" aria-label="Marca"></select><label for="evModelo">Modelo</label><select id="evModelo" aria-label="Modelo"></select>
     <div class="row2"><div><label for="evPrecio">Precio (CLP)</label><input id="evPrecio" class="money" type="text" inputmode="numeric" aria-label="Precio (CLP)"></div><div><label for="evCons">Rendimiento (km/kWh)</label><input id="evCons" type="number" step="0.1" aria-label="Rendimiento (km/kWh)"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
     <div class="specs" id="evSpecs"></div></div>
-  <div class="card"><h2><span class="dot" style="background:var(--ice)"></span>Combustión / Híbrido</h2>
+  <div class="card"><h2><span class="dot" style="background:var(--ice)"></span>Combustión / Híbrido<button type="button" class="rst" onclick="resetSide('ic')">↺ Reiniciar</button></h2>
     <div class="row3"><div><label for="icTec">Tecnología</label><select id="icTec" aria-label="Tecnología"></select></div><div><label for="icCarr">Carrocería</label><select id="icCarr" aria-label="Carrocería"></select></div><div><label for="icAnio">Año</label><select id="icAnio" aria-label="Año"></select></div></div>
     <label for="icMarca">Marca</label><select id="icMarca" aria-label="Marca"></select><label for="icModelo">Modelo</label><select id="icModelo" aria-label="Modelo"></select>
     <div class="row2"><div><label for="icPrecio">Precio (CLP)</label><input id="icPrecio" class="money" type="text" inputmode="numeric" aria-label="Precio (CLP)"></div><div><label for="icCons">Rendimiento (km/L)</label><input id="icCons" type="number" step="0.1" aria-label="Rendimiento (km/L)"></div></div><small class="hint">Valores automáticos del modelo · puedes ingresar precio y rendimiento manualmente.</small>
@@ -283,6 +284,7 @@ function modelosFor(side,filtered){
   let list=filtered?flt(D,$(side+'Tec').value,$(side+'Anio').value,$(side+'Carr').value):D;
   return list.filter(v=>v.ma===marca);
 }
+function resetSide(side){fullFilters(side);fillMarcasFull(side,"");$(side+"Modelo").innerHTML='<option value="">— Modelo —</option>';$(side+"Modelo").value="";(side==='ev'?evSpecs:icSpecs)(null);$(side+"Precio").value="";$(side+"Cons").value="";applyCosts();calc();}
 function loadSel(side){
   const D=side==='ev'?DATA.ev:DATA.ic;const spec=side==='ev'?evSpecs:icSpecs;
   const mv=$(side+'Modelo').value;
@@ -298,6 +300,7 @@ function refreshModelo(side){
   if(!marca){$(side+'Modelo').innerHTML='<option value="">— Modelo —</option>';loadSel(side);return;}
   const ms=modelosFor(side,true);
   if(!ms.length){$(side+'Modelo').innerHTML='<option value="">— Modelo —</option>';loadSel(side);return;}
+  ms.sort((a,b)=>(b.an-a.an)||label(a).localeCompare(label(b)));
   $(side+'Modelo').innerHTML=ms.map(v=>`<option value="${v.id}">${label(v)}</option>`).join('');
   $(side+'Modelo').value=ms[0].id;loadSel(side);
 }
