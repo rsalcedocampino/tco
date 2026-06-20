@@ -288,6 +288,9 @@ function loadSel(side){
   const mv=$(side+'Modelo').value;
   if(mv===''){spec(null);applyCosts();calc();return;}
   const sel=D[+mv];if(!sel){spec(null);applyCosts();calc();return;}
+  setOpt(side+'Tec',sel.t,TECLABEL[sel.t]||sel.t);
+  setOpt(side+'Carr',sel.cr||'',sel.cr||'');
+  setOpt(side+'Anio',String(sel.an),String(sel.an));
   spec(sel);applyCosts();calc();
 }
 function refreshModelo(side){
