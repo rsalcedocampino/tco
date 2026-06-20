@@ -3,14 +3,14 @@
 <title>Calculadora TCO — Eléctrico vs Combustión | Chile</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f0f4f0;--card:#ffffff;--card2:#f6f9f6;--line:#d7e0d7;--txt:#222222;--mut:#607d8b;
---ev:#4caf50;--evtxt:#2e7d32;--ice:#ff5722;--icetxt:#d84315;--accent:#2b5ba8;--good:#4caf50;}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+:root{--bg:#f4f7fb;--card:#ffffff;--card2:#f8fafc;--line:#e2e8f0;--txt:#0f172a;--mut:#64748b;
+--ev:#16a34a;--evtxt:#15803d;--ice:#ef5b34;--icetxt:#c2410c;--accent:#0ea5b7;--good:#16a34a;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
 .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 60px}
 .brandbar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:10px}.brandbar .eflogo{height:46px;width:auto;display:block}
 .brandbar .efm{position:relative;width:46px;height:46px;flex:0 0 auto}.brandbar .efm .ring{position:absolute;inset:0;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:conic-gradient(from 0deg,#F4A04C 0deg 28deg,#22B6A2 95deg,#17A6D9 178deg,#1C9AD6 268deg,#F4A04C 332deg 360deg)}.brandbar .efm .hole{position:absolute;inset:23%;background:#fff;border-radius:50%}.brandbar .efm svg{position:absolute;inset:0;width:100%;height:100%}.brandbar .wm{font-size:22px;font-weight:700;color:#2b6ca6;letter-spacing:.3px;font-family:Arial,Helvetica,sans-serif}.brandbar .wm span{color:#2b6ca6}.brandbar .tag{margin-left:auto;font-size:11px;color:var(--mut)}
-.hd{background:var(--ev);color:#fff;border-radius:14px;padding:18px 20px;margin-bottom:6px}
-h1{font-size:24px;margin:0;font-weight:700}.sub{color:#eaf6ea;font-size:13px;margin-top:4px}
+.hd{background:#fff;color:#0f172a;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:18px 20px;margin-bottom:6px}
+h1{font-size:24px;margin:0;font-weight:700}.sub{color:#64748b;font-size:13px;margin-top:4px}
 .note0{color:var(--mut);font-size:13px;margin:14px 2px 18px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .card h2{font-size:14px;margin:0 0 12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.4px;color:#37474f}.dot{width:11px;height:11px;border-radius:50%}
@@ -35,10 +35,12 @@ td.ev{color:var(--evtxt);font-weight:600}td.ice{color:var(--icetxt);font-weight:
 .verdict{background:#e8f5e9;border:1px solid var(--good);border-radius:14px;padding:16px;margin-top:16px;font-size:15px;color:#1b3a1f}.verdict b{font-size:18px}
 small.hint{color:var(--mut);font-size:10px}
 .rst{margin-left:auto;font-size:11px;background:#eef3ee;border:1px solid var(--line);color:#37474f;border-radius:8px;padding:4px 9px;cursor:pointer;text-transform:none;letter-spacing:0}.rst:hover{background:#e2ebe2}
+.efnav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(8px);-webkit-backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid #e2e8f0}.efnav-in{max-width:1180px;margin:0 auto;height:60px;display:flex;align-items:center;gap:14px;padding:0 16px}.efnav-logo img{height:32px;width:auto;display:block}.efnav-menu{display:flex;gap:16px;flex:1;flex-wrap:wrap;overflow:hidden}.efnav-menu a{color:#64748b;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}.efnav-menu a:hover{color:#0f172a}.efnav-menu a.active{color:var(--ev)}.efnav-cta{background:var(--ev);color:#fff;font-size:12px;font-weight:700;text-decoration:none;padding:8px 12px;border-radius:9px;white-space:nowrap}.effoot{border-top:1px solid #e2e8f0;background:#fff;margin-top:30px}.effoot-in{max-width:1180px;margin:0 auto;padding:18px 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#64748b;font-size:12px}.effoot-in a{color:var(--ev);text-decoration:none}@media(max-width:900px){.efnav-menu{display:none}}
 .tabs{display:flex;gap:8px;margin:6px 0 14px;flex-wrap:wrap}.tabb{background:#eef3ee;border:1px solid var(--line);color:#37474f;border-radius:10px;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700}.tabb.active{background:var(--ev);color:#fff;border-color:var(--ev)}.rec{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}.rec th,.rec td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}.rec th:first-child,.rec td:first-child{text-align:left}.rec thead th{font-size:11px;text-transform:uppercase;color:var(--mut);position:sticky;top:0;background:var(--card)}.rtag{display:inline-block;background:#e8f5e9;color:#2e7d32;border:1px solid #b6dfb9;border-radius:6px;padding:1px 6px;font-size:10px;margin:2px 2px 0 0}
 @media(max-width:820px){.row3,.row4{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.specs{grid-template-columns:1fr 1fr}}@media(max-width:700px){.grid2{grid-template-columns:1fr}.row2{grid-template-columns:1fr}}@media(max-width:520px){.wrap{padding:14px 10px 48px}h1{font-size:20px}.hd{padding:14px 16px}.row2,.row3,.row4{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.brandbar .tag{display:none}.brandbar .eflogo{height:38px}.wm{font-size:18px}table{font-size:12px}th,td{padding:7px 5px}.kpi .v{font-size:19px}.verdict{font-size:14px}.verdict b{font-size:16px}}
-</style></head><body><div class="wrap">
-<div class="brandbar"><img class="eflogo" src="logo%20y%20nombre%20-%20copia.png" alt="Energías Futuro"><span class="tag">Observatorio de Electromovilidad</span></div>
+</style></head><body>
+<nav class="efnav"><div class="efnav-in"><a class="efnav-logo" href="https://www.energiasfuturo.com" title="Energías Futuro"><img src="logo%20y%20nombre%20-%20copia.png" alt="Energías Futuro"></a><div class="efnav-menu"><a href="https://preview.energiasfuturo.com/app/">Inicio</a><a href="https://preview.energiasfuturo.com/app/">Resumen Ejecutivo</a><a href="https://preview.energiasfuturo.com/app/">Mercado EV</a><a href="https://preview.energiasfuturo.com/app/">Infraestructura</a><a href="https://preview.energiasfuturo.com/app/">Energía y BESS</a><a href="https://preview.energiasfuturo.com/app/">Inversión</a><a href="https://preview.energiasfuturo.com/app/">Reportes</a><a href="https://preview.energiasfuturo.com/app/">Censo</a><a class="active" href="#">Calculadora</a><a href="https://preview.energiasfuturo.com/app/">Metodología</a></div><a class="efnav-cta" href="https://www.energiasfuturo.com">energiasfuturo.com ↗</a></div></nav>
+<div class="wrap">
 <div class="hd"><h1>Calculadora TCO · Eléctrico vs Combustión</h1><div class="sub">Costo total de propiedad en Chile · datos 3CV + SII</div></div>
 <div class="note0">613 eléctricos/híbridos enchufables y 3212 combustión/híbridos · impuesto verde, permiso real (Ley 21.505) y costos por modelo</div>
 <div class="tabs"><button class="tabb active" id="tabbtn-comparador" onclick="showTab('comparador')">Comparador TCO</button><button class="tabb" id="tabbtn-similar" onclick="showTab('similar')">Desde mi vehículo actual</button><button class="tabb" id="tabbtn-reco" onclick="showTab('reco')">Recomendador EV</button></div>
@@ -406,4 +408,6 @@ $('simPrecio').addEventListener('input',buildSimilar);$('simRend').addEventListe
 ['recoPres','recoKm','recoCarga','recoTec','recoCarr'].forEach(id=>$(id).addEventListener('change',buildReco));$('recoPres').addEventListener('input',buildReco);$('recoKm').addEventListener('input',buildReco);
 initSim();initReco();
 
-</script></body></html>
+</script>
+<footer class="effoot"><div class="effoot-in"><div>Observatorio de Electromovilidad y Energía · Chile</div><div>Energías Futuro · <a href="https://www.energiasfuturo.com">www.energiasfuturo.com</a></div></div></footer>
+</body></html>
