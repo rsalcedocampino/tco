@@ -1,0 +1,32 @@
+==========================================
+  COMO PUBLICAR LA CALCULADORA TCO
+==========================================
+
+PARA ACTUALIZAR LA WEB:
+
+  1. Edita  index.html  (aqui en esta carpeta).
+  2. Doble clic en  deploy-tco.bat
+  3. Espera el mensaje  [OK] Publicado
+     -> en 1-2 minutos se ve en https://tco.energiasfuturo.com
+
+------------------------------------------
+
+LA PRIMERA VEZ que corras deploy-tco.bat:
+
+  - Conecta la carpeta con GitHub automaticamente.
+  - Te pedira iniciar sesion:
+        Usuario:     rsalcedocampino
+        Contrasena:  pega el TOKEN "tco-deploy"
+                     (NO tu clave normal de GitHub)
+  - Puede decir "No hay cambios que publicar": es normal,
+    significa que la web ya esta igual. Listo.
+
+  Desde la 2a vez, publica tus cambios sin volver a pedir el token.
+
+------------------------------------------
+
+SIEMPRE se corre el MISMO archivo:  deploy-tco.bat
+(no hay uno distinto para la primera vez).
+
+No borres la carpeta oculta  .git  que se crea:
+es lo que permite publicar.
