@@ -104,6 +104,32 @@ small.hint{color:var(--mut);font-size:10px}
   <div id="co2Save" class="verdict" style="margin-top:12px"></div>
   <small class="hint">Combustión: 2,31 kgCO₂/L bencina · 2,68 kgCO₂/L diésel (tank-to-wheel). Eléctrico: consumo × factor de la red (editable; SEN Chile ≈0,40 kgCO₂/kWh). 1 árbol absorbe ≈22 kgCO₂/año.</small>
 </div>
+<div class="card" style="margin-top:16px"><h2>Ahorro en energía (eléctrico vs combustión)</h2>
+  <div class="row2">
+    <div class="kpi"><div class="l">Ahorro al año</div><div class="v" id="savYr" style="font-size:20px">—</div></div>
+    <div class="kpi"><div class="l">Ahorro por km</div><div class="v" id="savKm" style="font-size:20px">—</div></div>
+  </div>
+  <small class="hint">Diferencia de costo de energía/combustible entre ambos, con los km y precios actuales.</small>
+</div>
+<div class="card" style="margin-top:16px"><h2>Financiamiento (crédito automotriz)</h2>
+  <div class="row3">
+    <div><label for="finPie">Pie (%)</label><input id="finPie" type="number" min="0" max="100" step="1" value="20"></div>
+    <div><label for="finPlazo">Plazo (meses)</label><input id="finPlazo" type="number" min="1" step="1" value="48"></div>
+    <div><label for="finTasa">Tasa anual (%)</label><input id="finTasa" type="number" min="0" step="0.1" value="9.9"></div>
+  </div>
+  <table class="rec" style="margin-top:8px"><thead><tr><th>Financiamiento</th><th>Eléctrico</th><th>Combustión</th></tr></thead>
+   <tbody>
+    <tr><td>Cuota mensual</td><td class="ev" id="cuotaEv">—</td><td class="ice" id="cuotaIc">—</td></tr>
+    <tr><td>Total pagado (con interés)</td><td class="ev" id="finTotEv">—</td><td class="ice" id="finTotIc">—</td></tr>
+    <tr><td>Intereses</td><td class="ev" id="finIntEv">—</td><td class="ice" id="finIntIc">—</td></tr>
+   </tbody></table>
+  <small class="hint">Cuota estimada: monto = precio − pie, con interés compuesto mensual. Valor referencial (no incluye seguros ni gastos del crédito).</small>
+</div>
+<div class="card" style="margin-top:16px"><h2>Sensibilidad al precio de la energía</h2>
+  <table class="rec"><thead><tr><th>Escenario</th><th>TCO eléctrico</th><th>TCO combustión</th><th>Diferencia</th></tr></thead>
+   <tbody id="sensBody"></tbody></table>
+  <small class="hint">Cómo cambia el TCO al período elegido si suben los precios de energía/combustible (electricidad, bencina y diésel).</small>
+</div>
 <div class="card" style="margin-top:16px"><h2>Simulador de paneles solares para la carga</h2>
   <div class="row3">
     <div><label for="hsp">Horas sol pico (HSP)</label><input id="hsp" type="number" step="0.1" min="0" value="5.5" aria-label="Horas sol pico (HSP)"></div>
@@ -163,7 +189,7 @@ small.hint{color:var(--mut);font-size:10px}
     </div>
     <div class="row2" style="margin-top:4px">
       <div><label for="solPanelW">Potencia por panel (W)</label><input id="solPanelW" type="number" step="10" min="0" value="550"></div>
-      <div></div>
+      <div><label for="solWp">Costo instalado (CLP/Wp)</label><input id="solWp" type="number" step="10" min="0" value="750"></div>
     </div>
     <div id="solInfo" class="verdict" style="margin-top:12px"></div>
     <small class="hint">Radiación referencial por región (HSP promedio · Explorador Solar, Min. Energía); editable. Filtro de cargadores hasta 50 kW. Sistema dimensionado con +25% por pérdidas.</small>
@@ -246,7 +272,7 @@ function calc(){
   const km=(KMYEAR||M("kmMes")*12),Y=+$("anios").value,pkwh=M("pkwh"),pbenc=M("pbenc"),pdie=M("pdie"),perd=1+(+$("perdidas").value/100),uf=(+$("ufphev").value)/100;
   const evP=M("evPrecio"),icP=M("icPrecio");
   if(!(evP>0&&icP>0)){
-    ["vEv","vIc","vDif","vBe","ckmEv","ckmIc","co2Ev","co2Ic"].forEach(function(id){var e=$(id);if(e)e.textContent="—";});
+    ["vEv","vIc","vDif","vBe","ckmEv","ckmIc","co2Ev","co2Ic","savYr","savKm","cuotaEv","cuotaIc","finTotEv","finTotIc","finIntEv","finIntIc"].forEach(function(id){var e=$(id);if(e)e.textContent="—";});
     ["sEv","sIc","sDif","co2EvY","co2IcY"].forEach(function(id){var e=$(id);if(e)e.textContent="";});
     var bd=$("breakdown");if(bd)bd.innerHTML="";
     $("kEv").className="kpi";$("kIc").className="kpi";
@@ -298,7 +324,7 @@ function calc(){
   else{cs.style.display="";
     if(co2Save>0){cs.style.background="#e8f5e9";cs.style.borderColor="var(--good)";cs.innerHTML=`El eléctrico <b>deja de emitir ${fmt(co2Save)} kgCO₂/año</b> — ${(co2Save*Y/1000).toFixed(2)} t en ${Y} años (−${Math.round(co2Pct)}%), equivalente a ~<b>${fmt(trees)} árboles/año</b>.`;}
     else{cs.style.background="#fbe9e7";cs.style.borderColor="var(--ice)";cs.innerHTML=`En este escenario el eléctrico emite <b>${fmt(-co2Save)} kgCO₂/año más</b>. Revisa el factor de la red eléctrica.`;}}
-  drawChart(Y,evUp,evM,icUp,icM,cross);calcCarga();}
+  var _savYr=icEnergy-evEnergy;if($("savYr")){$("savYr").textContent=(_savYr>=0?"":"-")+CLP(Math.abs(_savYr))+"/año";$("savYr").style.color=_savYr>=0?"var(--evtxt)":"var(--icetxt)";$("savKm").textContent=CLP((km>0?Math.abs(_savYr)/km:0))+"/km";$("savKm").style.color=_savYr>=0?"var(--evtxt)":"var(--icetxt)";}var _pie=(+$("finPie").value||0)/100,_n=Math.max(1,+$("finPlazo").value||1),_tm=(+$("finTasa").value||0)/1200;function _cuota(P){P=P*(1-_pie);var c=_tm>0?P*_tm/(1-Math.pow(1+_tm,-_n)):P/_n;return {c:c,tot:c*_n,intr:c*_n-P};}var _fe=_cuota(evP),_fi=_cuota(icP);if($("cuotaEv")){$("cuotaEv").textContent=CLP(_fe.c);$("cuotaIc").textContent=CLP(_fi.c);$("finTotEv").textContent=CLP(_fe.tot+evP*_pie);$("finTotIc").textContent=CLP(_fi.tot+icP*_pie);$("finIntEv").textContent=CLP(_fe.intr);$("finIntIc").textContent=CLP(_fi.intr);}function _evT(f){return evDep+(evEnergy*f+evMant+evSeg+evPerm)*Y+wb+evIv;}function _icT(f){return icDep+(icEnergy*f+icMant+icSeg+icPerm)*Y+icIv;}var _esc=[["Base",1],["+10% energía",1.1],["+20% energía",1.2]];if($("sensBody"))$("sensBody").innerHTML=_esc.map(function(e){var a=_evT(e[1]),b=_icT(e[1]),d=b-a;return "<tr><td>"+e[0]+"</td><td class=\"ev\">"+CLP(a)+"</td><td class=\"ice\">"+CLP(b)+"</td><td style=\"color:"+(d>=0?"var(--evtxt)":"var(--icetxt)")+"\">"+(d>=0?"−":"+")+CLP(Math.abs(d))+"</td></tr>";}).join("");drawChart(Y,evUp,evM,icUp,icM,cross);calcCarga();}
 let chart,BE={};
 function drawChart(Y,evUp,evM,icUp,icM,cross){
   BE={cross,evUp,evM};
@@ -400,7 +426,7 @@ function selectModelo(side){loadSel(side);}
 $("evMarca").onchange=()=>onMarcaSel('ev');$("evModelo").onchange=()=>loadSel('ev');
 $("icMarca").onchange=()=>onMarcaSel('ic');$("icModelo").onchange=()=>loadSel('ic');
 ["anios","utm"].forEach(id=>$(id).addEventListener("input",()=>{applyCosts();calc();}));
-["evCons","icCons","perdidas","ufphev","resEv","resIc","factElec"].forEach(id=>$(id).addEventListener("input",calc));
+["evCons","icCons","perdidas","ufphev","resEv","resIc","factElec","finPie","finPlazo","finTasa"].forEach(id=>$(id).addEventListener("input",calc));
 ["hsp","panelW","pr"].forEach(id=>$(id).addEventListener("input",calcSolar));
 $("hUso").addEventListener("input",()=>syncHoras("uso"));$("hEstac").addEventListener("input",()=>syncHoras("estac"));["potCarga"].forEach(id=>{$(id).addEventListener("input",calcCarga);$(id).addEventListener("change",calcCarga);});
 $("kmDia").addEventListener("input",()=>syncKm("dia"));$("kmMes").addEventListener("input",()=>syncKm("mes"));$("kmSem").addEventListener("input",()=>syncKm("sem"));
@@ -441,8 +467,8 @@ function buildSolarSim(){const el=$("solInfo");if(!el)return;
   if(need<=0||hsp<=0||pW<=0){el.style.background="#eef3ee";el.style.borderColor="#cfd8cf";el.innerHTML="Ingresa potencia del cargador, horas de carga y parámetros solares.";return;}
   const perPanel=(pW/1000)*hsp*pr,target=need*1.25,panels=perPanel>0?Math.ceil(target/perPanel):0;
   const kwp=panels*pW/1000,genDay=panels*perPanel,genYr=genDay*365,potTxt=String(pot).replace(".",",");
-  let bess="";if(hrs>hsp){const hx=hrs-hsp,bkwh=pot*hx*1.15;bess=`<br><span style="color:var(--icetxt)">⚠️ Las horas de carga (${hrs} h) superan las horas de sol (${String(hsp).replace(".",",")} h): se recomienda <b>instalar baterías de respaldo (BESS)</b> de ~<b>${fmt(bkwh)} kWh</b> para cargar fuera del horario solar (${hx.toFixed(1)} h × ${potTxt} kW).</span>`;}el.innerHTML=`<b>${zona}</b> · radiación ${String(hsp).replace(".",",")} HSP.<br>Un cargador de <b>${potTxt} kW</b> operando <b>${hrs} h/día</b> entrega <b>${need.toFixed(1)} kWh/día</b>.<br>Paneles necesarios (sistema +25% por pérdidas): <b>${panels} × ${pW} W</b> = <b>${kwp.toFixed(1)} kWp</b>.<br>Generación estimada: <b>${fmt(genDay)} kWh/día</b> (${fmt(genYr)} kWh/año), con ${Math.round(pr*100)}% de rendimiento.${bess}`;}
-$("solRegion").addEventListener("change",solRegionChange);$("solComuna").addEventListener("change",buildSolarSim);["solPot","solHoras","solHsp","solPanelW","solPr"].forEach(id=>{$(id).addEventListener("input",buildSolarSim);$(id).addEventListener("change",buildSolarSim);});
+  let bess="";if(hrs>hsp){const hx=hrs-hsp,bkwh=pot*hx*1.15;bess=`<br><span style="color:var(--icetxt)">⚠️ Las horas de carga (${hrs} h) superan las horas de sol (${String(hsp).replace(".",",")} h): se recomienda <b>instalar baterías de respaldo (BESS)</b> de ~<b>${fmt(bkwh)} kWh</b> para cargar fuera del horario solar (${hx.toFixed(1)} h × ${potTxt} kW).</span>`;}el.innerHTML=`<b>${zona}</b> · radiación ${String(hsp).replace(".",",")} HSP.<br>Un cargador de <b>${potTxt} kW</b> operando <b>${hrs} h/día</b> entrega <b>${need.toFixed(1)} kWh/día</b>.<br>Paneles necesarios (sistema +25% por pérdidas): <b>${panels} × ${pW} W</b> = <b>${kwp.toFixed(1)} kWp</b>.<br>Generación estimada: <b>${fmt(genDay)} kWh/día</b> (${fmt(genYr)} kWh/año), con ${Math.round(pr*100)}% de rendimiento.${bess}`+(function(){var wp=+$("solWp").value||0,price=M("pkwh")||150,cost=kwp*1000*wp,sav=genYr*price,pay=sav>0?cost/sav:0;return `<br>Costo estimado del sistema: <b>${fmt(cost)} CLP</b> (${wp} CLP/Wp). Ahorro solar: <b>${fmt(sav)} CLP/año</b> (a ${CLP(price)}/kWh) → recuperacion (payback): <b>${pay>0?pay.toFixed(1)+" años":"—"}</b>.`;})();}
+$("solRegion").addEventListener("change",solRegionChange);$("solComuna").addEventListener("change",buildSolarSim);["solPot","solHoras","solHsp","solPanelW","solPr","solWp"].forEach(id=>{$(id).addEventListener("input",buildSolarSim);$(id).addEventListener("change",buildSolarSim);});
 initSolar();
 
 </script>
