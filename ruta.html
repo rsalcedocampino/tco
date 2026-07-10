@@ -8,10 +8,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#0f172a;padding:24px 14px}
-  .wrap{max-width:980px;margin:0 auto}
-  .demo-tag{display:inline-block;background:#ffefe0;color:#c2410c;font-size:12px;font-weight:700;
-    padding:4px 10px;border-radius:20px;margin-bottom:12px;letter-spacing:.3px}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#0f172a;padding:0}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 44px}
+  .hero{background:linear-gradient(120deg,#2b5ba8 0%,#1abba8 60%,#4a90d9 100%);color:#fff}
+  .hero-in{display:flex;align-items:center;gap:22px;max-width:1180px;margin:0 auto;padding:22px 30px 18px;flex-wrap:wrap}
+  .hero-l{display:flex;gap:16px;align-items:flex-start}
+  .hero-logo{display:flex;flex-direction:column;align-items:flex-start}
+  .lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+  .hero-card{background:#fff;padding:8px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .hero-card img{height:42px;display:block}
+  .hero-c{flex:1;min-width:220px}
+  .hero-c h1{font-size:22px;font-weight:700;margin:0;color:#fff}
+  .hero-dev{font-size:12px;margin-top:5px;color:#fff}
+  .hero-r{display:flex;gap:8px;align-items:center}
+  .hero-pill,.hero-btn{font-size:11px;font-weight:600;background:rgba(255,255,255,.18);padding:5px 16px;border-radius:20px;color:#fff;text-decoration:none;border:0}
+  .rd-title{font-size:20px;font-weight:800;color:#0f172a;margin:0 0 4px}
+  .rd-sub{font-size:14px;color:#64748b;margin:0 0 4px;max-width:700px}
   .rd{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(30,60,110,.12)}
   .rd-head{background:linear-gradient(120deg,#2b5ba8 0%,#1abba8 60%,#4a90d9 100%);color:#fff;padding:26px 26px 22px}
   .rd-head h2{font-size:22px;font-weight:700}
@@ -109,15 +121,19 @@
 </style>
 </head>
 <body>
+<div class="hero"><div class="hero-in">
+  <div class="hero-l">
+    <div class="hero-logo"><span class="lbl">POWERED BY</span><a class="hero-card" href="https://www.energiasfuturo.com" title="Energías Futuro"><img src="logo%20y%20nombre%20-%20copia.png" alt="Energías Futuro"></a></div>
+    <div class="hero-logo"><span class="lbl">COLABORA</span><span class="hero-card"><img src="https://www.avec.cl/wp-content/uploads/2020/11/logo.png" alt="AVEC"></span></div>
+  </div>
+  <div class="hero-c"><h1>Calculadora TCO · Eléctrico vs Combustión</h1><div class="hero-dev">Desarrollado por Rodrigo Salcedo Campino</div></div>
+  <div class="hero-r"><span class="hero-pill" id="lastUpd">Actualizado</span><a class="hero-btn" href="https://www.energiasfuturo.com">Contacto</a></div>
+</div></div>
 <div class="wrap">
-  <span class="demo-tag">VISTA DE PRUEBA · así se vería en la web</span>
   <div class="rd">
-    <div class="rd-head">
-      <h2>Calcula el costo de tu ruta</h2>
-      <p>Indica origen, destino (y paradas si quieres), elige tu auto eléctrico y compáralo con uno a
-         combustión: energía, peajes, mantención y CO₂ de tu trayecto real.</p>
-    </div>
     <div class="rd-body">
+      <h2 class="rd-title">Calcula el costo de tu ruta</h2>
+      <p class="rd-sub">Indica origen, destino (y paradas si quieres), elige tu auto eléctrico y compáralo con uno a combustión: energía, peajes, mantención y CO₂ de tu trayecto real.</p>
 
       <div class="sec">4 · Autos a comparar</div>
       <div class="cars">
@@ -530,6 +546,7 @@ function calc(){
 }
 $('go').addEventListener('click',calcRoute);
 ['viaje','dias','pElec','pComb','peaje','mBev','mIce'].forEach(function(id){$(id).addEventListener('input',calc)});
+(function(){var d=new Date(document.lastModified);if(isNaN(d.getTime()))d=new Date();var M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];var e=$('lastUpd');if(e)e.textContent='Actualizado '+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear();})();
 setTimeout(function(){map.invalidateSize(); calcRoute();},400);
 </script>
 </body>
